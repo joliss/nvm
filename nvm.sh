@@ -1314,6 +1314,10 @@ nvm() {
         NVM_NODE_PREFIX="$(nvm_node_prefix)"
         PROVIDED_VERSION="$2"
         case "_$PROVIDED_VERSION" in
+          "_default")
+            # Special case for performance, as this is run on every shell startup
+            VERSION="$(nvm_alias default 2> /dev/null)"
+          ;;
           "_$NVM_IOJS_PREFIX" | "_io.js")
             VERSION="$(nvm_version $NVM_IOJS_PREFIX)"
           ;;
@@ -1718,7 +1722,7 @@ if nvm_supports_source_options && [ "_$1" = "_--install" ]; then
   elif nvm_rc_version >/dev/null 2>&1; then
     nvm install >/dev/null
   fi
-elif nvm ls default >/dev/null; then
+elif nvm_alias default >/dev/null 2>&1; then
   nvm use default >/dev/null
 elif nvm_rc_version >/dev/null 2>&1; then
   nvm use >/dev/null
