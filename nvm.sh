@@ -209,6 +209,7 @@ nvm_ensure_version_installed() {
 
 # Expand a version using the version cache
 nvm_version() {
+  echo "version $@" >&2
   local PATTERN
   PATTERN=$1
   local VERSION
@@ -227,6 +228,7 @@ nvm_version() {
       PATTERN="stable"
     ;;
   esac
+  echo nvm_ls "$PATTERN">&2
   VERSION="$(nvm_ls "$PATTERN" | tail -n1)"
   if [ -z "$VERSION" ] || [ "_$VERSION" = "_N/A" ]; then
     echo "N/A"
@@ -469,6 +471,7 @@ nvm_resolve_alias() {
 }
 
 nvm_resolve_local_alias() {
+  echo "resolving $1" >&2
   if [ -z "$1" ]; then
     return 1
   fi
@@ -577,7 +580,7 @@ nvm_ls() {
     if nvm_is_iojs_version "$PATTERN"; then
       NVM_DIRS_TO_TEST_AND_SEARCH="$NVM_VERSION_DIR_IOJS"
       PATTERN="$(nvm_strip_iojs_prefix "$PATTERN")"
-      if nvm_has_system_iojs; then
+      if nvm_has_system_iojs; then # XXX
         NVM_ADD_SYSTEM=true
       fi
     elif [ "_$PATTERN" = "_$NVM_NODE_PREFIX-" ]; then
@@ -602,6 +605,7 @@ nvm_ls() {
       PATTERN='v'
     fi
     if [ -n "$NVM_DIRS_TO_SEARCH" ]; then
+      # XXX
       VERSIONS="$(command find $NVM_DIRS_TO_SEARCH -maxdepth 1 -type d -name "$PATTERN*" \
         | command sed "s#$NVM_VERSION_DIR_IOJS/#"$NVM_IOJS_PREFIX"-#" \
         | command grep -v "$NVM_VERSION_DIR_IOJS" \
